@@ -1,0 +1,170 @@
+= Asciidoctor Overview
+:source-highlighter: highlightjs
+:icons: font
+:author: Brian Thomas Smith
+:docdate:
+
+== What is Asciidoctor?
+
+AsciiDoc Initially designed as a plain-text alternative to the DocBook XML schema.
+
+[quote]
+"Asciidoctor is a fast text processor and publishing toolchain for converting AsciiDoc content to HTML5, DocBook, PDF, and other formats."
+
+== Why use it?
+
+* It's (mostly) easy to read
+* The source looks very similar to the output
+* Write less tags/special syntax and write more content
+* Very fast at converting
+
+== What does it look like?
+
+[source]
+--
+= Hello, AsciiDoc!
+Doc Writer <doc@example.com>
+
+An introduction to http://asciidoc.org[AsciiDoc].
+
+== First Section
+
+* item 1
+* item 2
+
+[source,ruby]
+puts "Hello, World!"
+--
+
+== Live Examples
+
+* link:https://github.com/swift-lang/swift-k/tree/master/docs[Swift-Lang]
+* link:https://github.com/git/git/tree/master/Documentation[Git User Manual]
+* link:https://github.com/cdi-spec/cdi/tree/master/spec[CDI (Contexts and Dependency Injection) Spec]
+
+== What is has that Markdown doesn't
+
+* Includes - and structured content
+* Rich media (video)
+* Non-trivial tables
+* A clearly-defined syntax
+
+== Tooling
+
+* Asciidoctor written in Ruby
+* JRuby (https://github.com/asciidoctor/asciidoctor-maven-plugin[maven]), Asciidoctor.js implementations exist
+* Use any text editor (web editors)
+* Open source
+* Extensible
+* Supported by Github*
+
+[.small]
+In 'Safe Mode'
+
+== Extensions
+
+* Preprocessor - process adoc source before parsing
+* IncludeProcessor - intercept the AsciiDoc include directive
+* Postprocessor - process the converted output before writing to disk
+* BlockProcessor - add a custom delimited block
+* InlineMacroProcessor - add a custom inline macro
+* ...
+
+== Docinfo Extension Example
+
+Docinfo (header) extension example
+
+[source,ruby]
+--
+style = File.join(__dir__, 'assets/mystyle.css')
+css_join = IO.readlines(style).join.to_s
+
+Asciidoctor::Extensions.register do
+  docinfo_processor do
+    at_location :head
+    process do |_doc|
+      %(<style> #{css_join} </style>)
+    end
+  end
+end
+--
+
+== Postprocessor Example
+
+[source,ruby]
+--
+lt_gt = '(&gt;&gt;|&lt;&lt;)'
+
+Extensions.register do
+  postprocessor do
+    process do |_document, output|
+      output.gsub(/#{lt_gt}/, '')
+    end
+  end
+end
+--
+
+== Code Includes
+
+[source,adoc]
+--
+[source,ruby]
+----
+\include::lib/document.rb[lines=5..10]
+----
+--
+
+NOTE: Will not work on GitHub directly, but in generated docs.
+
+== Code Includes pt. 2
+
+.adoc file
+[source,adoc]
+--
+[source,ruby]
+----
+\include::lib/document.rb[tag=coolsection]
+----
+--
+
+.document.rb
+[source,ruby]
+----
+# tag::coolsection[]
+/needle/.match('haystack')
+# end::coolsection[]
+----
+
+This shows how to include code by https://asciidoctor.org/docs/user-manual/#by-tagged-regions[tagged region]
+
+== Warning!
+
+WARNING: While Asciidoctor is great for a lot of things, AsciiDoc is **not** LaTeX.
+
+* asciidoctor-mathematical
+* MathJax CDN
+* asciidoctor-diagram
+
+== Warning pt. 2!
+
+Custom extensions are fun to write, but they won't work everywhere (GitHub, for example).
+In this case, your rendered markdown will be peppered with broken macros etc.
+
+== My Experience
+
+Using it for language specification with a *lot* of math was tricky.
+Very complex layout can be tricky.
+
+For most structured, collaborative documentation, it was very good. Fits in quite well with developer workflow, community support and resources are very good.
+
+== Recommendations
+
+* Use it vanilla where possible.
+* Use it everywhere (your repo READMEs) as this helps with fluidity of writing
+* Have fun writing docs
+
+== Resources
+
+* http://www.vogella.com/tutorials/AsciiDoc/article.html[Vogella AsciiDoc introduction]
+* https://asciidoctor.org/docs/user-manual/[Asciidoctor User Manual]
+* https://asciidoctor.org/docs/asciidoc-writers-guide/[Asciidoctor Writer's Guide]

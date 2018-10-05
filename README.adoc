@@ -1,0 +1,39 @@
+= Reveal.adoc
+:source-highlighter: highlightjs
+
+An example of using asciidoc to create basic slides / presentation.
+
+The generator here is https://github.com/asciidoctor/asciidoctor-reveal.js[asciidoctor-reveal.js]
+
+== Getting Started
+
+=== Node
+
+https://nodejs.org/en/[Node] is a prerequisite.
+To install, use the official https://nodejs.org/en/download/[downloads], or for package managers see the following:
+
+* On Ubuntu, use https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions[apt]
+* On macOS - `brew install node`
+
+=== Build The Slides!
+
+[source,bash]
+--
+# install required node packages
+npm i
+# generate the slides
+node reveal.js && open slides.html
+--
+
+== Customisation
+
+It's possible to add or customise the following in slides:
+
+* Background colors/images/videos
+* Slide Transitions
+* Custom CSS
+* Admonitions (Warning/Note etc.)
+
+
+
+More examples can be found in the https://github.com/asciidoctor/asciidoctor-reveal.js#syntax-examples[repo README].

@@ -1,0 +1,158 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="author" content="Brian Thomas Smith"><title>Asciidoctor Overview</title><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"><link href="node_modules/reveal.js/css/reveal.css" rel="stylesheet"><link rel="stylesheet" href="node_modules/reveal.js/css/theme/black.css" id="theme"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css"><link href="node_modules/reveal.js/lib/css/zenburn.css" rel="stylesheet"><script>var link = document.createElement( 'link' );
+link.rel = 'stylesheet';
+link.type = 'text/css';
+link.href = window.location.search.match( /print-pdf/gi ) ? "node_modules/reveal.js/css/print/pdf.css" : "node_modules/reveal.js/css/print/paper.css";
+document.getElementsByTagName( 'head' )[0].appendChild( link );</script><!--[if lt IE 9]><script src="node_modules/reveal.js/lib/js/html5shiv.js"></script><![endif]--></head><body><div class="reveal"><div class="slides"><section class="title" data-state="title"><h1>Asciidoctor Overview</h1><p class="author"><small>Brian Thomas Smith</small></p></section><section id="what_is_asciidoctor"><h2>What is Asciidoctor?</h2><div class="paragraph"><p>AsciiDoc Initially designed as a plain-text alternative to the DocBook XML schema.</p></div>
+<div class="quoteblock"><blockquote>"Asciidoctor is a fast text processor and publishing toolchain for converting AsciiDoc content to HTML5, DocBook, PDF, and other formats."</blockquote></div></section>
+<section id="why_use_it"><h2>Why use it?</h2><div class="ulist"><ul><li><p>It&#8217;s (mostly) easy to read</p></li><li><p>The source looks very similar to the output</p></li><li><p>Write less tags/special syntax and write more content</p></li><li><p>Very fast at converting</p></li></ul></div></section>
+<section id="what_does_it_look_like"><h2>What does it look like?</h2><div class="listingblock"><div class="content"><pre class="highlight"><code data-noescape>= Hello, AsciiDoc!
+Doc Writer &lt;doc@example.com&gt;
+
+An introduction to http://asciidoc.org[AsciiDoc].
+
+== First Section
+
+* item 1
+* item 2
+
+[source,ruby]
+puts "Hello, World!"</code></pre></div></div></section>
+<section id="live_examples"><h2>Live Examples</h2><div class="ulist"><ul><li><p><a href="https://github.com/swift-lang/swift-k/tree/master/docs">Swift-Lang</a></p></li><li><p><a href="https://github.com/git/git/tree/master/Documentation">Git User Manual</a></p></li><li><p><a href="https://github.com/cdi-spec/cdi/tree/master/spec">CDI (Contexts and Dependency Injection) Spec</a></p></li></ul></div></section>
+<section id="what_is_has_that_markdown_doesn_t"><h2>What is has that Markdown doesn&#8217;t</h2><div class="ulist"><ul><li><p>Includes - and structured content</p></li><li><p>Rich media (video)</p></li><li><p>Non-trivial tables</p></li><li><p>A clearly-defined syntax</p></li></ul></div></section>
+<section id="tooling"><h2>Tooling</h2><div class="ulist"><ul><li><p>Asciidoctor written in Ruby</p></li><li><p>JRuby (<a href="https://github.com/asciidoctor/asciidoctor-maven-plugin">maven</a>), Asciidoctor.js implementations exist</p></li><li><p>Use any text editor (web editors)</p></li><li><p>Open source</p></li><li><p>Extensible</p></li><li><p>Supported by Github*</p></li></ul></div>
+<div class="paragraph small"><small>In 'Safe Mode'</small></div></section>
+<section id="extensions"><h2>Extensions</h2><div class="ulist"><ul><li><p>Preprocessor - process adoc source before parsing</p></li><li><p>IncludeProcessor - intercept the AsciiDoc include directive</p></li><li><p>Postprocessor - process the converted output before writing to disk</p></li><li><p>BlockProcessor - add a custom delimited block</p></li><li><p>InlineMacroProcessor - add a custom inline macro</p></li><li><p>&#8230;&#8203;</p></li></ul></div></section>
+<section id="docinfo_extension_example"><h2>Docinfo Extension Example</h2><div class="paragraph"><p>Docinfo (header) extension example</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code data-noescape class="ruby language-ruby">style = File.join(__dir__, 'assets/mystyle.css')
+css_join = IO.readlines(style).join.to_s
+
+Asciidoctor::Extensions.register do
+  docinfo_processor do
+    at_location :head
+    process do |_doc|
+      %(&lt;style&gt; #{css_join} &lt;/style&gt;)
+    end
+  end
+end</code></pre></div></div></section>
+<section id="postprocessor_example"><h2>Postprocessor Example</h2><div class="listingblock"><div class="content"><pre class="highlight"><code data-noescape class="ruby language-ruby">lt_gt = '(&amp;gt;&amp;gt;|&amp;lt;&amp;lt;)'
+
+Extensions.register do
+  postprocessor do
+    process do |_document, output|
+      output.gsub(/#{lt_gt}/, '')
+    end
+  end
+end</code></pre></div></div></section>
+<section id="code_includes"><h2>Code Includes</h2><div class="listingblock"><div class="content"><pre class="highlight"><code data-noescape class="adoc language-adoc">[source,ruby]
+----
+include::lib/document.rb[lines=5..10]
+----</code></pre></div></div>
+<div class="admonitionblock note"><table><tr><td class="icon"><i class="fa fa-info-circle" title="Note"></i></td><td class="content">Will not work on GitHub directly, but in generated docs.</td></tr></table></div></section>
+<section id="code_includes_pt_2"><h2>Code Includes pt. 2</h2><div class="listingblock"><div class="title">adoc file</div><div class="content"><pre class="highlight"><code data-noescape class="adoc language-adoc">[source,ruby]
+----
+include::lib/document.rb[tag=coolsection]
+----</code></pre></div></div>
+<div class="listingblock"><div class="title">document.rb</div><div class="content"><pre class="highlight"><code data-noescape class="ruby language-ruby"># tag::coolsection[]
+/needle/.match('haystack')
+# end::coolsection[]</code></pre></div></div>
+<div class="paragraph"><p>This shows how to include code by <a href="https://asciidoctor.org/docs/user-manual/#by-tagged-regions">tagged region</a></p></div></section>
+<section id="warning"><h2>Warning!</h2><div class="admonitionblock warning"><table><tr><td class="icon"><i class="fa fa-warning" title="Warning"></i></td><td class="content">While Asciidoctor is great for a lot of things, AsciiDoc is <strong>not</strong> LaTeX.</td></tr></table></div>
+<div class="ulist"><ul><li><p>asciidoctor-mathematical</p></li><li><p>MathJax CDN</p></li><li><p>asciidoctor-diagram</p></li></ul></div></section>
+<section id="warning_pt_2"><h2>Warning pt. 2!</h2><div class="paragraph"><p>Custom extensions are fun to write, but they won&#8217;t work everywhere (GitHub, for example).
+In this case, your rendered markdown will be peppered with broken macros etc.</p></div></section>
+<section id="my_experience"><h2>My Experience</h2><div class="paragraph"><p>Using it for language specification with a <strong>lot</strong> of math was tricky.
+Very complex layout can be tricky.</p></div>
+<div class="paragraph"><p>For most structured, collaborative documentation, it was very good. Fits in quite well with developer workflow, community support and resources are very good.</p></div></section>
+<section id="recommendations"><h2>Recommendations</h2><div class="ulist"><ul><li><p>Use it vanilla where possible.</p></li><li><p>Use it everywhere (your repo READMEs) as this helps with fluidity of writing</p></li><li><p>Have fun writing docs</p></li></ul></div></section>
+<section id="resources"><h2>Resources</h2><div class="ulist"><ul><li><p><a href="http://www.vogella.com/tutorials/AsciiDoc/article.html">Vogella AsciiDoc introduction</a></p></li><li><p><a href="https://asciidoctor.org/docs/user-manual/">Asciidoctor User Manual</a></p></li><li><p><a href="https://asciidoctor.org/docs/asciidoc-writers-guide/">Asciidoctor Writer&#8217;s Guide</a></p></li></ul></div></section></div></div><script src="node_modules/reveal.js/lib/js/head.min.js"></script><script src="node_modules/reveal.js/js/reveal.js"></script><script>// See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
+Reveal.initialize({
+  // Display controls in the bottom right corner
+  controls: true,
+  // Display a presentation progress bar
+  progress: true,
+  // Set a per-slide timing for speaker notes, null means none
+  defaultTiming: null,
+  // Display the page number of the current slide
+  slideNumber: false,
+  // Push each slide change to the browser history
+  history: false,
+  // Enable keyboard shortcuts for navigation
+  keyboard: true,
+  // Enable the slide overview mode
+  overview: true,
+  // Vertical centering of slides
+  center: true,
+  // Enables touch navigation on devices with touch input
+  touch: true,
+  // Loop the presentation
+  loop: false,
+  // Change the presentation direction to be RTL
+  rtl: false,
+  // Randomizes the order of slides each time the presentation loads
+  shuffle: false,
+  // Turns fragments on and off globally
+  fragments: true,
+  // Flags if the presentation is running in an embedded mode,
+  // i.e. contained within a limited portion of the screen
+  embedded: false,
+  // Flags if we should show a help overlay when the questionmark
+  // key is pressed
+  help: true,
+  // Flags if speaker notes should be visible to all viewers
+  showNotes: false,
+  // Global override for autolaying embedded media (video/audio/iframe)
+  // - null: Media will only autoplay if data-autoplay is present
+  // - true: All media will autoplay, regardless of individual setting
+  // - false: No media will autoplay, regardless of individual setting
+  autoPlayMedia: null,
+  // Number of milliseconds between automatically proceeding to the
+  // next slide, disabled when set to 0, this value can be overwritten
+  // by using a data-autoslide attribute on your slides
+  autoSlide: 0,
+  // Stop auto-sliding after user input
+  autoSlideStoppable: true,
+  // Enable slide navigation via mouse wheel
+  mouseWheel: false,
+  // Hides the address bar on mobile devices
+  hideAddressBar: true,
+  // Opens links in an iframe preview overlay
+  previewLinks: false,
+  // Theme (e.g., beige, black, league, night, serif, simple, sky, solarized, white)
+  // NOTE setting the theme in the config no longer works in reveal.js 3.x
+  //theme: Reveal.getQueryHash().theme || 'black',
+  // Transition style (e.g., none, fade, slide, convex, concave, zoom)
+  transition: Reveal.getQueryHash().transition || 'slide',
+  // Transition speed (e.g., default, fast, slow)
+  transitionSpeed: 'default',
+  // Transition style for full page slide backgrounds (e.g., none, fade, slide, convex, concave, zoom)
+  backgroundTransition: 'fade',
+  // Number of slides away from the current that are visible
+  viewDistance: 3,
+  // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
+  parallaxBackgroundImage: '',
+  // Parallax background size in CSS syntax (e.g., "2100px 900px")
+  parallaxBackgroundSize: '',
+
+  // The "normal" size of the presentation, aspect ratio will be preserved
+  // when the presentation is scaled to fit different resolutions. Can be
+  // specified using percentage units.
+  width: 960,
+  height: 700,
+
+  // Factor of the display size that should remain empty around the content
+  margin: 0.1,
+
+  // Bounds for smallest/largest possible scale to apply to content
+  minScale: 0.2,
+  maxScale: 1.5,
+
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+      { src: 'node_modules/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'node_modules/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'node_modules/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'node_modules/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'node_modules/reveal.js/plugin/zoom-js/zoom.js', async: true },
+      { src: 'node_modules/reveal.js/plugin/notes/notes.js', async: true }
+  ]
+});</script></body></html>
